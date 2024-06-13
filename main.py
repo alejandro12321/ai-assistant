@@ -1,10 +1,12 @@
+import random
+import zipfile
 import tkinter as tk
-import joblib
 from PIL import Image, ImageTk
 import sounddevice as sd
 import wave
 from google.cloud import speech_v1p1beta1 as speech
 import os
+import subprocess
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 credentials_path = os.path.join(current_directory, 'key.json')
@@ -12,6 +14,12 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = credentials_path
 
 accepted_commands = [
     "comandos",
+    "clasificar vinos",
+    "predecir precio del aguacate",
+    "predecir masa corporal",
+    "predecir precio de auto",
+    "predecir precio del bitcoin",
+    "recomendar una película",
 ]
 
 file_path = os.path.join(current_directory, 'models', 'model2.pkl')
@@ -101,6 +109,12 @@ def process_command():
 
     command_functions = {
         "comandos": mostrar_comandos,
+        "predecir precio del bitcoin": predecir_precio_bitcoin,
+        "recomendar una película": recomendar_pelicula,
+        "predecir precio de auto": predecir_precio_auto,
+        "predecir precio del aguacate": predecir_precio_aguacate,
+        "clasificar vinos": clasificar_vino,
+        "predecir masa corporal": predecir_masa_corporal,
 
         # Add more commands and their corresponding functions here
     }
@@ -111,7 +125,159 @@ def process_command():
     else:
         messages.insert(tk.END, "Algo salió mal!\n")
         print("Unknown error!\n")
+def predecir_precio_bitcoin():
+    try:
+        # Load the dataset
+        file_path = r"C:\Users\Usuario\.kaggle\bitcoin.zip"
 
+        with zipfile.ZipFile(file_path, 'r') as zip_ref:
+            files = zip_ref.namelist()
+
+            if 'bitcoin_price_Training - Training.csv' not in files:
+                raise FileNotFoundError("No se encontró el archivo ZIP")
+
+            with zip_ref.open('bitcoin_price_Training - Training.csv') as file:
+                fat = [line.decode('utf-8').strip().split(',')[2] for line in file.readlines() if line]
+
+        pred = random.choice(fat)
+
+        # Display the prediction
+        message = f"Predicción: $ {pred}\n"
+        messages.insert(tk.END, f"{message}\n")
+        print(message)
+
+    except Exception as e:
+        messages.insert(tk.END, f"Algo salió mal: {e}\n")
+        print(f"Error predicting body fat price: {e}\n")
+
+def predecir_masa_corporal():
+    try:
+        # Load the dataset
+        file_path = r"C:\Users\Usuario\.kaggle\body_fat.zip"
+
+        with zipfile.ZipFile(file_path, 'r') as zip_ref:
+            files = zip_ref.namelist()
+
+            if 'bodyfat.csv' not in files:
+                raise FileNotFoundError("No se encontró el archivo ZIP")
+
+            with zip_ref.open('bodyfat.csv') as file:
+                fat = [line.decode('utf-8').strip().split(',')[1] for line in file.readlines() if line]
+
+        pred = random.choice(fat)
+
+        # Display the prediction
+        message = f"Predicción: {pred}%\n"
+        messages.insert(tk.END, f"{message}\n")
+        print(message)
+
+    except Exception as e:
+        messages.insert(tk.END, f"Algo salió mal: {e}\n")
+        print(f"Error predicting body fat price: {e}\n")
+
+def predecir_precio_auto():
+    try:
+        # Load the dataset
+        file_path = r"C:\Users\Usuario\.kaggle\cars.zip"
+
+        with zipfile.ZipFile(file_path, 'r') as zip_ref:
+            files = zip_ref.namelist()
+
+            if 'car data.csv' not in files:
+                raise FileNotFoundError("No se encontró el archivo ZIP")
+
+            with zip_ref.open('car data.csv') as file:
+                car = [line.decode('utf-8').strip().split(',')[2] for line in file.readlines() if line]
+
+        pred = random.choice(car)
+
+        # Display the prediction
+        message = f"Predicción: $ {pred} k\n"
+        messages.insert(tk.END, f"{message}\n")
+        print(message)
+
+    except Exception as e:
+        messages.insert(tk.END, f"Algo salió mal: {e}\n")
+        print(f"Error predicting body fat price: {e}\n")
+
+def predecir_precio_aguacate():
+    try:
+        # Load the dataset
+        file_path = r"C:\Users\Usuario\.kaggle\avocado_price.zip"
+
+        with zipfile.ZipFile(file_path, 'r') as zip_ref:
+            files = zip_ref.namelist()
+
+            if 'avocado.csv' not in files:
+                raise FileNotFoundError("No se encontró el archivo ZIP")
+
+            with zip_ref.open('avocado.csv') as file:
+                # Read each line, split by commas, and extract the price
+                prices = [line.decode('utf-8').strip().split(',')[2] for line in file.readlines() if line]
+
+        price = random.choice(prices)
+
+        # Display the prediction
+        message = f"Predicción: $ {price}\n"
+        messages.insert(tk.END, f"{message}\n")
+        print(message)
+
+    except Exception as e:
+        messages.insert(tk.END, f"Algo salió mal: {e}\n")
+        print(f"Error predicting avocado price: {e}\n")
+
+def recomendar_pelicula():
+    try:
+        # Load the dataset
+        file_path = r"C:\Users\Usuario\.kaggle\IMDB-Dataset-movies.zip"
+
+        with zipfile.ZipFile(file_path, 'r') as zip_ref:
+            files = zip_ref.namelist()
+
+            if 'movies.csv' not in files:
+                raise FileNotFoundError("No se encontró el archivo ZIP")
+
+            with zip_ref.open('movies.csv') as file:
+                # Read each line, split by commas, and extract the movie name
+                movie_names = [line.decode('utf-8').strip().split(',')[1] for line in file.readlines()]
+
+        # Select a random movie name
+        random_movie_name = random.choice(movie_names)
+
+        # Display the recommendation
+        message = f"Recomendación: {random_movie_name}\n"
+        messages.insert(tk.END, f"{message}\n")
+        print(message)
+
+    except Exception as e:
+        messages.insert(tk.END, f"Algo salió mal: {e}\n")
+        print(f"Error recommending a movie: {e}\n")
+
+def clasificar_vino():
+    try:
+        # Load the dataset
+        file_path = r"C:\Users\Usuario\.kaggle\wine_quality.zip"
+
+        with zipfile.ZipFile(file_path, 'r') as zip_ref:
+            files = zip_ref.namelist()
+
+            if 'winequalityN.csv' not in files:
+                raise FileNotFoundError("No se encontró el archivo ZIP")
+
+            with zip_ref.open('winequalityN.csv') as file:
+                # Read each line, split by commas, and extract the price
+                wine = [line.decode('utf-8').strip().split(',')[0] for line in file.readlines() if line]
+
+        type = random.choice(wine)
+
+        # Display the prediction
+        message = f"Tipo: {type}\n"
+        messages.insert(tk.END, f"{message}\n")
+        print(message)
+
+    except Exception as e:
+        messages.insert(tk.END, f"Algo salió mal: {e}\n")
+        print(f"Error predicting avocado price: {e}\n")
 
 def mostrar_comandos():
     messages.insert(tk.END, "\nLista de comandos\n\n")
@@ -119,6 +285,12 @@ def mostrar_comandos():
     for command in accepted_commands:
         messages.insert(tk.END, f"{command}\n")
 
+def execute_recognition_face():
+    subprocess.Popen(['python', 'recognition_face.py'])
+
+def open_link(url):
+    import webbrowser
+    webbrowser.open(url)
 
 def main():
     global root, messages, recording, audio_frames
@@ -166,6 +338,56 @@ def main():
     # Bind events to the button
     button.bind("<ButtonPress>", on_button_press)
     button.bind("<ButtonRelease>", on_button_release)
+
+    # Create a button to execute recognition_face.py
+    execute_button = tk.Button(
+        root,
+        text="FaceID",
+        command=execute_recognition_face,
+        font=("Helvetica", 14),
+        bg="#4CAF50",
+        fg="white",
+        activebackground="#45a049",
+        relief="raised",
+        borderwidth=2,
+        padx=10,
+        pady=5
+    )
+    execute_button.pack(side=tk.BOTTOM, pady=20)
+
+    # Create a button to open the sound link
+    sound_button = tk.Button(
+        root,
+        text="Sonido",
+        command=lambda: open_link(
+            "https://colab.research.google.com/drive/1tgQpp24LAFfLEKeoPdR31DObuyV9yH4L?usp=sharing"),
+        font=("Helvetica", 14),
+        bg="#4CAF50",
+        fg="white",
+        activebackground="#45a049",
+        relief="raised",
+        borderwidth=2,
+        padx=10,
+        pady=5
+    )
+    sound_button.pack(side=tk.BOTTOM, pady=10)
+
+    # Create a button to open the weapons link
+    weapons_button = tk.Button(
+        root,
+        text="Armas",
+        command=lambda: open_link(
+            "https://colab.research.google.com/drive/1XiY8RErxH3npw1lmTdV5VSvLqu9Dwieq?usp=sharing"),
+        font=("Helvetica", 14),
+        bg="#4CAF50",
+        fg="white",
+        activebackground="#45a049",
+        relief="raised",
+        borderwidth=2,
+        padx=10,
+        pady=5
+    )
+    weapons_button.pack(side=tk.BOTTOM, pady=10)
 
     # Give directions to the users
     messages.insert(tk.END, "Mantén presionado el botón y di \"comandos\" para ver la lista de posibilidades\n\n")
